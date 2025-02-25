@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票計算器</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        input, button { margin: 10px; padding: 10px; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h2>股票買入計算器</h2>
+    <label>股票價格: <input type="number" id="price" step="0.01"></label><br>
+    <label>可用資金: <input type="number" id="capital" step="1"></label><br>
+    <button onclick="calculate()">計算</button>
+    <h3 id="result"></h3>
+
+    <script>
+        function calculateShares(price, capital) {
+            if (price <= 0 || capital <= 0) {
+                return 0; // 無效輸入
+            }
+
+            let shares = Math.floor(capital / price); // 初步計算最多可買股數
+
+            while (shares > 0) {
+                let fee;
+                if (shares <= 1000) {
+                    fee = 18;
+                } else {
+                    let extraShares = shares - 1000; // 超過 1000 股的部分
+                    fee = 18 + (extraShares * 0.015);
+                }
+
+                let totalCost = shares * price + fee;
+
+                if (totalCost <= capital) {
+                    return shares; // 找到符合條件的最大股數
+                }
+                shares--; // 如果不夠錢，就減少股數
+            }
+
+            return 0; // 如果無法買到任何股數，返回 0
+        }
+
+        function calculate() {
+            let price = parseFloat(document.getElementById("price").value);
+            let capital = parseFloat(document.getElementById("capital").value);
+
+            if (!price || !capital || price <= 0 || capital <= 0) {
+                document.getElementById("result").innerText = "請輸入有效的數值";
+                return;
+            }
+
+            let shares = calculateShares(price, capital);
+            document.getElementById("result").innerText = `你最多可以買入 ${shares} 股`;
+        }
+    </script>
+</body>
+</html>
